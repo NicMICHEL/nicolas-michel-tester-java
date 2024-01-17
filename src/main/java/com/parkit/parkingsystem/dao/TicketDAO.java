@@ -69,6 +69,26 @@ public class TicketDAO {
         }
     }
 
+    public int getNbTicket(String vehicleRegNumber) {
+        Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.GET_NB_TICKET);
+            ps.setString(1, vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            } else {
+                throw new RuntimeException("Error due to rs.next() return false");
+            }
+        } catch (Exception ex) {
+            logger.error("Error getting NbTicket", ex);
+            throw new RuntimeException(ex);
+        } finally {
+            dataBaseConfig.closeConnection(con);
+        }
+    }
+
     public boolean updateTicket(Ticket ticket) {
         Connection con = null;
         try {
@@ -86,4 +106,5 @@ public class TicketDAO {
         }
         return false;
     }
+
 }
