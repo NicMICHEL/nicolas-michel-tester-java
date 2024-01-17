@@ -107,4 +107,21 @@ public class TicketDAO {
         return false;
     }
 
+    public boolean addOneHourToTicket(Ticket ticket) {
+        Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.ADD_ONE_HOUR_TO_TICKET);
+            ps.setTimestamp(1, new Timestamp(ticket.getInTime().getTime() - (  60 * 60 * 1000)) );
+            ps.setInt(2, ticket.getId());
+            ps.execute();
+            return true;
+        } catch (Exception ex) {
+            logger.error("Error saving delayed ticket", ex);
+        } finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return false;
+    }
+
 }
