@@ -76,7 +76,7 @@ public class ParkingDataBaseIT {
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         double initialPrice = ticket.getPrice();
         Date initialOutTime = ticket.getOutTime();
-        ticketDAO.addOneHourToTicket(ticket);
+        ticketDAO.delayTheInTimeOfTheTicketByOneHour(ticket);
 
         ParkingService parkingService = new ParkingService(fareCalculatorService, inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processExitingVehicle();
@@ -108,7 +108,7 @@ public class ParkingDataBaseIT {
 
         parkingService.processIncomingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
-        ticketDAO.addOneHourToTicket(ticket);
+        ticketDAO.delayTheInTimeOfTheTicketByOneHour(ticket);
         parkingService.processExitingVehicle();
 
         ticket = ticketDAO.getTicket("ABCDEF");

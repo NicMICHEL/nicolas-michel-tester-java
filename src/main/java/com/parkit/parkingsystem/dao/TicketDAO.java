@@ -107,11 +107,11 @@ public class TicketDAO {
         return false;
     }
 
-    public boolean addOneHourToTicket(Ticket ticket) {
+    public boolean delayTheInTimeOfTheTicketByOneHour(Ticket ticket) {
         Connection con = null;
         try {
             con = dataBaseConfig.getConnection();
-            PreparedStatement ps = con.prepareStatement(DBConstants.ADD_ONE_HOUR_TO_TICKET);
+            PreparedStatement ps = con.prepareStatement(DBConstants.DELAY_THE_IN_TIME_OF_THE_TICKET_BY_ONE_HOUR);
             ps.setTimestamp(1, new Timestamp(ticket.getInTime().getTime() - (  60 * 60 * 1000)) );
             ps.setInt(2, ticket.getId());
             ps.execute();

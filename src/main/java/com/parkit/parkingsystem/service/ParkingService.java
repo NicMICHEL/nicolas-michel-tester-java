@@ -37,7 +37,7 @@ public class ParkingService {
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
 
                 if (ticketDAO.getNbTicket(vehicleRegNumber) > 0) {
-                    System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de\n" +
+                    logger.info("Heureux de vous revoir ! En tant qu’utilisateur régulier de\n" +
                             "notre parking, vous allez obtenir une remise de 5%");
                 }
 
@@ -51,9 +51,9 @@ public class ParkingService {
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
                 ticketDAO.saveTicket(ticket);
-                System.out.println("Generated Ticket and saved in DB");
-                System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
-                System.out.println("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
+                logger.info("Generated Ticket and saved in DB");
+                logger.info("Please park your vehicle in spot number:"+parkingSpot.getId());
+                logger.info("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
@@ -61,7 +61,7 @@ public class ParkingService {
     }
 
     private String getVehicleRegNumber() throws Exception {
-        System.out.println("Please type the vehicle registration number and press enter key");
+        logger.info("Please type the vehicle registration number and press enter key");
         return inputReaderUtil.readVehicleRegistrationNumber();
     }
 
@@ -85,9 +85,9 @@ public class ParkingService {
     }
 
     private ParkingType getVehicleType(){
-        System.out.println("Please select vehicle type from menu");
-        System.out.println("1 CAR");
-        System.out.println("2 BIKE");
+        logger.info("Please select vehicle type from menu");
+        logger.info("1 CAR");
+        logger.info("2 BIKE");
         int input = inputReaderUtil.readSelection();
         switch(input){
             case 1: {
@@ -97,7 +97,7 @@ public class ParkingService {
                 return ParkingType.BIKE;
             }
             default: {
-                System.out.println("Incorrect input provided");
+                logger.info("Incorrect input provided");
                 throw new IllegalArgumentException("Entered input is invalid");
             }
         }
@@ -119,10 +119,10 @@ public class ParkingService {
                 ParkingSpot parkingSpot = ticket.getParkingSpot();
                 parkingSpot.setAvailable(true);
                 parkingSpotDAO.updateParking(parkingSpot);
-                System.out.println("Please pay the parking fare:" + ticket.getPrice());
-                System.out.println("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
+                logger.info("Please pay the parking fare:" + ticket.getPrice());
+                logger.info("Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
             }else{
-                System.out.println("Unable to update ticket information. Error occurred");
+                logger.info("Unable to update ticket information. Error occurred");
             }
         }catch(Exception e){
             logger.error("Unable to process exiting vehicle",e);
