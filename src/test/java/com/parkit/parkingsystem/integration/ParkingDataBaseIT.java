@@ -10,16 +10,13 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.FareCalculatorService;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.Date;
-
 import static junit.framework.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -54,17 +51,13 @@ public class ParkingDataBaseIT {
         dataBasePrepareService.clearDataBaseEntries();
     }
 
-    @AfterAll
-    private static void tearDown(){
-
-    }
-
     @Test
     public void testParkingACar(){
         ParkingService parkingService = new ParkingService(fareCalculatorService, inputReaderUtil, parkingSpotDAO, ticketDAO);
         int initialNbTicket = ticketDAO.getNbTicket("ABCDEF");
         int initialAvailableSlot = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
         parkingService.processIncomingVehicle();
+        //check that a ticket is actually saved in DB and Parking table is updated with availability
         assertEquals((initialNbTicket + 1), ticketDAO.getNbTicket("ABCDEF") );
         assertEquals((initialAvailableSlot + 1), parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR) );
     }
@@ -72,18 +65,14 @@ public class ParkingDataBaseIT {
     @Test
     public void testParkingLotExit(){
         testParkingACar();
-
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         double initialPrice = ticket.getPrice();
         Date initialOutTime = ticket.getOutTime();
         ticketDAO.delayTheInTimeOfTheTicketByOneHour(ticket);
-
         ParkingService parkingService = new ParkingService(fareCalculatorService, inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processExitingVehicle();
-
-        //TODO: check that the fare generated and out time are populated correctly in the database
         ticket = ticketDAO.getTicket("ABCDEF");
-
+        //check that the fare generated and out time are populated correctly in the database
         assertNull(initialOutTime);
         assertEquals(0, initialPrice);
         assertTrue(
@@ -100,19 +89,16 @@ public class ParkingDataBaseIT {
 
     @Test
     public void testParkingLotExitRecurringUser(){
-
         ParkingService parkingService = new ParkingService(fareCalculatorService, inputReaderUtil, parkingSpotDAO, ticketDAO);
-
         parkingService.processIncomingVehicle();
         parkingService.processExitingVehicle();
-
+        // after this first pass the user is now a recurring user
         parkingService.processIncomingVehicle();
         Ticket ticket = ticketDAO.getTicket("ABCDEF");
         ticketDAO.delayTheInTimeOfTheTicketByOneHour(ticket);
         parkingService.processExitingVehicle();
-
         ticket = ticketDAO.getTicket("ABCDEF");
-
+        // check that the price generated takes into account the 5% discount
         assertTrue(
                 (   ticket.getPrice()    < (1 * 0.95 * Fare.CAR_RATE_PER_HOUR) + 0.001   )
                         &&
